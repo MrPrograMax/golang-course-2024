@@ -7,21 +7,25 @@ import (
 	"strings"
 )
 
+const English = "english"
+
 func main() {
-	sentence := flag.String("s", "", "Input a sentence (use \"*text*\")")
+	var sentence string
+	flag.StringVar(&sentence, "s", "", "Input a sentence (use \"text\")")
 	flag.Parse()
 
-	if *sentence == "" {
+	if sentence == "" {
 		fmt.Println("Use -s flag for correct work of app")
 		return
 	}
 
-	words := strings.Split(*sentence, " ")
+	words := strings.Split(sentence, " ")
 	var answer []string
 	repetitiveWords := make(map[string]interface{})
 
-	for i := 0; i < len(words); i++ {
-		word, err := snowball.Stem(words[i], "english", true)
+	for _, word := range words {
+		word = strings.ToLower(word)
+		word, err := snowball.Stem(word, English, true)
 		if err != nil {
 			fmt.Printf("Error: %s", err)
 			return
@@ -31,7 +35,9 @@ func main() {
 		if exist {
 			continue
 		}
-		if strings.Contains(word, "'ll") {
+
+		skipFlag := isWordContainsLiteral(word)
+		if skipFlag {
 			continue
 		}
 

@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 var stopList = map[string]interface{}{
 	"of":  nil,
 	"a":   nil,
@@ -7,6 +9,7 @@ var stopList = map[string]interface{}{
 	"as":  nil,
 	"are": nil,
 	"is":  nil,
+	"to":  nil,
 
 	"i":          nil,
 	"he":         nil,
@@ -41,4 +44,23 @@ var stopList = map[string]interface{}{
 func isContainsInStopList(word string) bool {
 	_, exist := stopList[word]
 	return exist
+}
+
+var literalList = []string{
+	"'t",
+	"'ve",
+	"'re",
+	"'re",
+	"'ll",
+}
+
+func isWordContainsLiteral(word string) bool {
+	for _, literal := range literalList {
+		if strings.Contains(word, literal) {
+			return true
+
+		}
+	}
+
+	return false
 }
