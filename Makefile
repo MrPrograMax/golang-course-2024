@@ -1,4 +1,4 @@
-BINARY_NAME=main.out
+BINARY_NAME=myapp
 
 build:
 	go build -o ${BINARY_NAME} cmd/stopWords.go cmd/main.go
