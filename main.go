@@ -30,6 +30,11 @@ func main() {
 
 	for _, word := range words {
 		word = strings.ToLower(word)
+
+		if skipFlag := isContainsLiteral(word); skipFlag {
+			continue
+		}
+
 		word, err := snowball.Stem(word, English, true)
 		if err != nil {
 			fmt.Printf("Error: %s", err)
@@ -37,10 +42,6 @@ func main() {
 		}
 
 		if exist := isStopWord(word); exist {
-			continue
-		}
-
-		if skipFlag := isContainsLiteral(word); skipFlag {
 			continue
 		}
 
