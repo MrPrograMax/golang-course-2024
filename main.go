@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/kljensen/snowball"
 	"strings"
+	"unicode"
 )
 
 const English = "english"
@@ -19,7 +20,11 @@ func main() {
 		return
 	}
 
-	words := strings.Split(sentence, " ")
+	sep := func(c rune) bool {
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
+	}
+
+	words := strings.FieldsFunc(sentence, sep)
 	var answer []string
 	repetitiveWords := make(map[string]interface{})
 
@@ -31,17 +36,15 @@ func main() {
 			return
 		}
 
-		exist := isContainsInStopList(word)
-		if exist {
+		if exist := isStopWord(word); exist {
 			continue
 		}
 
-		skipFlag := isWordContainsLiteral(word)
-		if skipFlag {
+		if skipFlag := isContainsLiteral(word); skipFlag {
 			continue
 		}
 
-		_, exist = repetitiveWords[word]
+		_, exist := repetitiveWords[word]
 		if !exist {
 			repetitiveWords[word] = nil
 		} else {
