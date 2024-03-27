@@ -21,10 +21,11 @@ func main() {
 	}
 
 	sep := func(c rune) bool {
-		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && c != '\''
 	}
 
 	words := strings.FieldsFunc(sentence, sep)
+	fmt.Println(words)
 	var answer []string
 	repetitiveWords := make(map[string]interface{})
 

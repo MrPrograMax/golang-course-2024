@@ -26,6 +26,7 @@ func isStopWord(word string) bool {
 
 var literalList = []string{
 	"'t",
+	"'m",
 	"'ve",
 	"'re",
 	"'ll",
