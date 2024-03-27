@@ -2,7 +2,7 @@ package main
 
 import "strings"
 
-func IsStopWord(word string) bool {
+func isStopWord(word string) bool {
 	switch word {
 	case "a", "about", "above", "after", "again", "against", "all", "am", "an",
 		"and", "any", "are", "as", "at", "be", "because", "been", "before",
@@ -31,7 +31,7 @@ var literalList = []string{
 	"'ll",
 }
 
-func IsContainsLiteral(word string) bool {
+func isContainsLiteral(word string) bool {
 	for _, literal := range literalList {
 		if strings.Contains(word, literal) {
 			return true
