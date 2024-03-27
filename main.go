@@ -25,7 +25,6 @@ func main() {
 	}
 
 	words := strings.FieldsFunc(sentence, sep)
-	fmt.Println(words)
 	var answer []string
 	repetitiveWords := make(map[string]interface{})
 
