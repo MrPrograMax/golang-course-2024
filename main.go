@@ -20,18 +20,17 @@ func main() {
 		return
 	}
 
-	sep := func(c rune) bool {
-		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && c != '\''
-	}
+	words := strings.FieldsFunc(sentence, func(c rune) bool {
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && string(c) != "'"
+	})
 
-	words := strings.FieldsFunc(sentence, sep)
 	var answer []string
 	repetitiveWords := make(map[string]interface{})
 
 	for _, word := range words {
 		word = strings.ToLower(word)
 
-		if skipFlag := isContainsLiteral(word); skipFlag {
+		if skipFlag := isContainLiteral(word); skipFlag {
 			continue
 		}
 
