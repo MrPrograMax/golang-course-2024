@@ -24,20 +24,6 @@ func isStopWord(word string) bool {
 	return false
 }
 
-var literalList = []string{
-	"'t",
-	"'m",
-	"'ve",
-	"'re",
-	"'ll",
-}
-
-func isContainsLiteral(word string) bool {
-	for _, literal := range literalList {
-		if strings.Contains(word, literal) {
-			return true
-		}
-	}
-
-	return false
+func isContainLiteral(word string) bool {
+	return strings.Contains(word, "'")
 }
