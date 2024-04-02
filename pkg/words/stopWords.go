@@ -1,6 +1,11 @@
-package main
+package words
 
-import "strings"
+import (
+	"fmt"
+	"github.com/kljensen/snowball"
+	"strings"
+	"unicode"
+)
 
 func isStopWord(word string) bool {
 	switch word {
@@ -26,4 +31,44 @@ func isStopWord(word string) bool {
 
 func isContainLiteral(word string) bool {
 	return strings.Contains(word, "'")
+}
+
+const English = "english"
+
+func Normalize(sentence string) (string, error) {
+	words := strings.FieldsFunc(sentence, func(c rune) bool {
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && string(c) != "'"
+	})
+
+	var answer []string
+	repetitiveWords := make(map[string]interface{})
+
+	for _, word := range words {
+		word = strings.ToLower(word)
+
+		if skipFlag := isContainLiteral(word); skipFlag {
+			continue
+		}
+
+		word, err := snowball.Stem(word, English, true)
+		if err != nil {
+			fmt.Printf("Error: %s", err)
+			return sentence, err
+		}
+
+		if exist := isStopWord(word); exist {
+			continue
+		}
+
+		_, exist := repetitiveWords[word]
+		if !exist {
+			repetitiveWords[word] = nil
+		} else {
+			continue
+		}
+
+		answer = append(answer, word)
+	}
+
+	return strings.Join(answer, " "), nil
 }
