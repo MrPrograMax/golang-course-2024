@@ -35,7 +35,7 @@ func isContainLiteral(word string) bool {
 
 const English = "english"
 
-func Normalize(sentence string) (string, error) {
+func Normalize(sentence string) ([]string, error) {
 	words := strings.FieldsFunc(sentence, func(c rune) bool {
 		return !unicode.IsLetter(c) && !unicode.IsNumber(c) && string(c) != "'"
 	})
@@ -53,7 +53,7 @@ func Normalize(sentence string) (string, error) {
 		word, err := snowball.Stem(word, English, true)
 		if err != nil {
 			fmt.Printf("Error: %s", err)
-			return sentence, err
+			return nil, err
 		}
 
 		if exist := isStopWord(word); exist {
@@ -70,5 +70,5 @@ func Normalize(sentence string) (string, error) {
 		answer = append(answer, word)
 	}
 
-	return strings.Join(answer, " "), nil
+	return answer, nil
 }

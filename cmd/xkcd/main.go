@@ -1,12 +1,7 @@
 package main
 
-import (
-	"flag"
-)
+import "golang-cource-2024/pkg/xkcd"
 
 func main() {
-	var sentence string
-	flag.StringVar(&sentence, "s", "", "Input a sentence (use \"text\")")
-	flag.Parse()
-
+	xkcd.BuildClient()
 }
