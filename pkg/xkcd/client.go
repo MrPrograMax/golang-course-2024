@@ -2,53 +2,69 @@ package xkcd
 
 import (
 	"encoding/json"
-	"flag"
+	"errors"
 	"fmt"
-	"github.com/spf13/viper"
-	"golang-cource-2024/pkg/database"
-	"golang-cource-2024/pkg/words"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 )
 
-const File = "/info.0.json"
+type ComicData struct {
+	Month      string `json:"month"`
+	Num        int    `json:"num"`
+	Link       string `json:"link"`
+	Year       string `json:"year"`
+	News       string `json:"news"`
+	SafeTitle  string `json:"safe_title"`
+	Transcript string `json:"transcript"`
+	Alt        string `json:"alt"`
+	Img        string `json:"img"`
+	Title      string `json:"title"`
+	Day        string `json:"day"`
+}
 
-func BuildClient() {
-	if err := initConfig(); err != nil {
-		log.Fatalf("error initializing configs: %s", err.Error())
-	}
+func RequestComics(comicCount int, domain, file string) ([]ComicData, error) {
+	client := http.Client{Timeout: 1 * time.Second}
+	comics := make([]ComicData, 0)
 
-	var outputJSON bool
-	var numComics int
-
-	flag.BoolVar(&outputJSON, "o", false, "Output JSON structure")
-	flag.IntVar(&numComics, "n", 100, "Number of comics to display")
-
-	flag.Parse()
-
-	c := http.Client{Timeout: time.Duration(1) * time.Second}
-	comics := make(map[string]database.ComicDetails, 0)
-
-	var Domain = viper.GetString("source_url")
-	for i := 1; i <= numComics; i++ {
-		resp, err := c.Get(fmt.Sprintf("%s%s%s", Domain, strconv.Itoa(i), File))
+	for i := 1; i <= comicCount; i++ {
+		fmt.Printf("\rОбрабатывается комикс: %d", i)
+		request := fmt.Sprintf("%s/%d/%s", domain, i, file)
+		resp, err := client.Get(request)
 		if err != nil {
-			fmt.Printf("Error %s", err)
-			return
+			message := fmt.Sprintf("Error sending get request : %s", err.Error())
+			return nil, errors.New(message)
 		}
 		defer resp.Body.Close()
 
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Error reading response body for comic %d: %v\n", i, err)
+		if resp.StatusCode != 200 {
+			log.Printf("\rError of get comic. Comic ID: %d. Status Code: %d\n", i, resp.StatusCode)
 			continue
 		}
 
-		var comic database.ComicData
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("\rError reading response body for comic %d: %v\n", i, err)
+			continue
+		}
+
+		var comic ComicData
+		err = json.Unmarshal(body, &comic)
+		if err != nil {
+			message := fmt.Sprintf("Error decoding JSON: %s", err.Error())
+			return nil, errors.New(message)
+		}
+
+		comics = append(comics, comic)
+	}
+	fmt.Printf("\r")
+
+	return comics, nil
+}
+
+/*func BuildClient() {
+		var comic ComicData
 		err = json.Unmarshal(body, &comic)
 		if err != nil {
 			fmt.Println("Error decoding JSON:", err)
@@ -94,9 +110,4 @@ func BuildClient() {
 		fmt.Println(string(jsonData))
 	}
 }
-
-func initConfig() error {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
-}
+*/
