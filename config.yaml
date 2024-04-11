@@ -1,0 +1,5 @@
+source_url: https://xkcd.com
+
+source_file: info.0.json
+
+db_file: database.json
